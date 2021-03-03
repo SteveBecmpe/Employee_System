@@ -1,0 +1,26 @@
+{
+  "name": "employee_system",
+  "version": "1.0.0",
+  "description": "## -[] Using MySQL work bench complete the following     -[X] Build MySQL data base named employee_system_db         -[X] Build Table: department         -[X] Build Table: role         -[X] Build Table: employee",
+  "main": "index.js",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "inquirer": "^8.0.0",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SteveBecmpe/Employee_System.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SteveBecmpe/Employee_System/issues"
+  },
+  "homepage": "https://github.com/SteveBecmpe/Employee_System#readme",
+  "keywords": []
+}
