@@ -115,8 +115,8 @@ function addEmployee() {
                 ])//EmployeeQuestions)
 
                 .then((data) => {
-                    console.log("data");
-                    console.log(data);
+                    // console.log("data");
+                    // console.log(data);
                     let tempRoleId = 0;
                     // console.log(roleArr.length);
                     for(i=0; i<roleArr.length; i++){
@@ -133,7 +133,7 @@ function addEmployee() {
                         tempName = managerArr[i].firstName;
                         tempName += ' ';
                         tempName += managerArr[i].lastName;
-                        console.log(tempName);
+                        // console.log(tempName);
                         if(tempName === data.manager){
                             tempManId = managerArr[i].manID;
                         }
@@ -194,7 +194,7 @@ const MenuQuestions = [
 ];
 
 function veiwAllDepartments() {
-    const departGet = 'SELECT * FROM department';
+    const departGet = 'SELECT department.department_name AS Department FROM department';
 
     connection.query(departGet, function (err, res) {
         if (err) throw err;
@@ -204,6 +204,31 @@ function veiwAllDepartments() {
 
 };
 
+function viewAllEmployees(){
+    // const allEmployeeGet = 'SELECT department.department_name AS Department FROM department';
+
+    const allEmployeeGet = 'SELECT employee.id, employee.first_name, employee.last_name, title, department_name AS Department, salary, CONCAT(e.first_name, " ", e.last_name) AS Manager FROM employee LEFT JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS e ON employee.manager_id = e.id';
+
+    connection.query(allEmployeeGet, function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        init();
+    })
+
+};
+
+
+function viewAllRoles() {
+    // const departGet = 'SELECT * FROM role';
+    const departGet = 'SELECT role.title, role.salary, department.department_name AS Department FROM role LEFT JOIN department ON role.department_id = department.id';
+
+    connection.query(departGet, function (err, res) {
+        if (err) throw err;
+        console.table(res);
+        init();
+    })
+
+};
 
 function init() {
     // console.log(teamMembers);
