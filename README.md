@@ -14,15 +14,15 @@ See assets folder for screen shots and mysql work bench code.
 -[X] Build Query: add employee  
 
 -[] Build Query: Update employee role
--[] Build Query: Update 
--[] Build Query: Update mployee managers
 
 -[X] Build Query: view department    
 -[X] Build Query: view role    
 -[] Build Query: view employee    
 -[X] Build Query: view all employees    
--[] Build Query: view employees by manager   
 
+# Bonus
+-[] Build Query: Update employee managers
+-[] Build Query: view employees by manager 
 -[] Build Query: delete department(s)    
 -[] Build Query: delete role(s)    
 -[] Build Query: delete employee(s)    
@@ -31,8 +31,9 @@ See assets folder for screen shots and mysql work bench code.
 ## -[] Add MySQL content to enquirer
 
 - [X] View all Departments
-- [] View all roles
-- [] View all employees
+- [X] View all roles
+- [X] View all employees
+- [X] Exit closes connection
 
 
 
