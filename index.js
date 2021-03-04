@@ -96,6 +96,7 @@ function init() {
                     viewAllRoles();
                     break;
                 case 'Exit':
+                    connection.end();
                     // console.log("Yeah finish");
                     // fs.writeFile('./distributeRelease/index.html', generateHtmlContent(teamMembers), (err) =>
                     //     err ? console.error(err) : console.log('Team HTML File Generated!'));
