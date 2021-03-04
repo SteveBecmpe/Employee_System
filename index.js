@@ -115,16 +115,21 @@ function addEmployee() {
                 ])//EmployeeQuestions)
 
                 .then((data) => {
+                    console.log("data");
                     console.log(data);
                     let tempRoleId = 0;
-                    for(i=0; i<roleArr.lenght; i++){
+                    // console.log(roleArr.length);
+                    for(i=0; i<roleArr.length; i++){
+                        // console.log(roleArr[i].roleName);
+                        // console.log(data.role);
                         if(roleArr[i].roleName === data.role){
                             tempRoleId = roleArr[i].roleID;
                         }
                     }
                     let tempManId = 0;
                     let tempName = '';
-                    for(i=0; i<managerArr.lenght; i++){
+                    // console.log(managerArr.length);
+                    for(i=0; i<managerArr.length; i++){
                         tempName = managerArr[i].firstName;
                         tempName += ' ';
                         tempName += managerArr[i].lastName;
@@ -141,7 +146,10 @@ function addEmployee() {
                         manager_id: tempManId
                     };
                     
-                    console.log(empVal);
+                    setTimeout(() => {
+                        console.log(empVal);
+                    }, 500);
+                    
 
 
                     // const empVar = 'first_name, last_name, role_id, manager_id';

@@ -1,5 +1,8 @@
 # Unit 12 MySQL Homework: Employee Tracker AKA Employee_System Enquirer & MySQL
 
+Ran out of time to complete unfortunately. Will continue to develope.
+See assets folder for screen shots and mysql work bench code. 
+
 ## -[] Using MySQL work bench complete the following    
 -[X] Build MySQL data base named employee_system_db        
 -[X] Build Table: department        
@@ -23,7 +26,14 @@
 -[] Build Query: delete department(s)    
 -[] Build Query: delete role(s)    
 -[] Build Query: delete employee(s)    
--[] Build Query: view total untilized budget of a department    
+-[] Build Query: view total untilized budget of a department 
+
+## -[] Add MySQL content to enquirer
+
+- [X] View all Departments
+- [] View all roles
+- [] View all employees
+
 
 
 
