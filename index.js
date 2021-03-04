@@ -20,6 +20,7 @@ const connection = mysql.createConnection({
 
 
 function addEmployee() {
+    console.clear();
     //Get all Roles
     const roleArr = [];
     const roleList = [];
@@ -32,7 +33,7 @@ function addEmployee() {
             for (i = 0; i < roleLength; i++) {
                 roleArr.push({ roleID: res[i].id, roleName: res[i].title });
                 roleList.push(res[i].title);
-                
+
             }
             console.log(roleArr);
             // console.log(roleList);
@@ -52,9 +53,9 @@ function addEmployee() {
                 const manLength = res.length;
                 for (i = 0; i < manLength; i++) {
                     managerArr.push({ manID: res[i].id, firstName: res[i].first_name, lastName: res[i].last_name });
-                    managerList.push( res[i].first_name + ' '+ res[i].last_name );
+                    managerList.push(res[i].first_name + ' ' + res[i].last_name);
                 }
-                console.log(managerArr);
+                // console.log(managerArr);
                 // console.table(res);
                 // init();
             }
@@ -85,7 +86,7 @@ function addEmployee() {
 
 
             ];
-            console.log(roleList);
+            // console.log(roleList);
             inquirer
                 .prompt([
                     {
@@ -110,8 +111,8 @@ function addEmployee() {
                         message: 'Who is the employees manager?',
                         choices: managerList
                     },
-    
-    
+
+
                 ])//EmployeeQuestions)
 
                 .then((data) => {
@@ -119,22 +120,22 @@ function addEmployee() {
                     // console.log(data);
                     let tempRoleId = 0;
                     // console.log(roleArr.length);
-                    for(i=0; i<roleArr.length; i++){
+                    for (i = 0; i < roleArr.length; i++) {
                         // console.log(roleArr[i].roleName);
                         // console.log(data.role);
-                        if(roleArr[i].roleName === data.role){
+                        if (roleArr[i].roleName === data.role) {
                             tempRoleId = roleArr[i].roleID;
                         }
                     }
                     let tempManId = 0;
                     let tempName = '';
                     // console.log(managerArr.length);
-                    for(i=0; i<managerArr.length; i++){
+                    for (i = 0; i < managerArr.length; i++) {
                         tempName = managerArr[i].firstName;
                         tempName += ' ';
                         tempName += managerArr[i].lastName;
                         // console.log(tempName);
-                        if(tempName === data.manager){
+                        if (tempName === data.manager) {
                             tempManId = managerArr[i].manID;
                         }
                     }
@@ -145,15 +146,20 @@ function addEmployee() {
                         role_id: tempRoleId,
                         manager_id: tempManId
                     };
-                    
-                    setTimeout(() => {
-                        console.log(empVal);
-                    }, 500);
-                    
+
+                    // console.log(empVal);
+
+                    const employeePOST = 'INSERT INTO employee SET ?';
+                    connection.query(employeePOST, 
+                        empVal, function (err, res) {
+                        if (err) throw err;
+                        init();
+                    })
+                    //INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ("Steve", "Black", 1 , NULL);
 
 
                     // const empVar = 'first_name, last_name, role_id, manager_id';
-                   
+
                     // const employeePut = 'INSERT INTO employee ? VALUES ?';
                     // empVar, empVal,
                     // connection.query(employeePut, function (err, res) {
@@ -194,6 +200,7 @@ const MenuQuestions = [
 ];
 
 function veiwAllDepartments() {
+    console.clear();
     const departGet = 'SELECT department.department_name AS Department FROM department';
 
     connection.query(departGet, function (err, res) {
@@ -204,7 +211,8 @@ function veiwAllDepartments() {
 
 };
 
-function viewAllEmployees(){
+function viewAllEmployees() {
+    console.clear();
     // const allEmployeeGet = 'SELECT department.department_name AS Department FROM department';
 
     const allEmployeeGet = 'SELECT employee.id, employee.first_name, employee.last_name, title, department_name AS Department, salary, CONCAT(e.first_name, " ", e.last_name) AS Manager FROM employee LEFT JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS e ON employee.manager_id = e.id';
@@ -219,6 +227,7 @@ function viewAllEmployees(){
 
 
 function viewAllRoles() {
+    console.clear();
     // const departGet = 'SELECT * FROM role';
     const departGet = 'SELECT role.title, role.salary, department.department_name AS Department FROM role LEFT JOIN department ON role.department_id = department.id';
 
@@ -231,6 +240,7 @@ function viewAllRoles() {
 };
 
 function init() {
+    // console.clear();
     // console.log(teamMembers);
     inquirer
         .prompt(MenuQuestions)
