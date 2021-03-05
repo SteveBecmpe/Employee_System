@@ -2,6 +2,7 @@
 // const app = express();
 const inquirer = require("inquirer");
 const fs = require('fs');
+const chalk = require('chalk');
 
 // const { inherits } = require("util");
 const mysql = require('mysql');
@@ -17,7 +18,19 @@ const connection = mysql.createConnection({
     database: 'employee_system_db',
 });
 
-
+const chalkText =
+    `   ***********  CMS Employee Management System  ********** 
+ |***********************************************************|
+ |     ********         *****      *****           *****     |                     
+ |   ***      ***     ***   ***  ***   ***       ***   ***   |                      
+ |  ***        ***   ***     ******     ***      ***    **   |               
+ |  ***              ***       **       ***       ****       |                     
+ |  ***              ***                ***          ****    |
+ |  ***        ***   ***                ***      **    ***   |     
+ |   ***      ***    ***                ***      ***   ***   |                 
+ |    *********      ***                ***        *****     |
+  ***********************************************************
+    **********  CMS Employee Management System  ***********   `;
 
 function addEmployee() {
     console.clear();
@@ -147,46 +160,20 @@ function addEmployee() {
                         manager_id: tempManId
                     };
 
-                    // console.log(empVal);
-
                     const employeePOST = 'INSERT INTO employee SET ?';
-                    connection.query(employeePOST, 
+                    connection.query(employeePOST,
                         empVal, function (err, res) {
-                        if (err) throw err;
-                        init();
-                    })
-                    //INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ("Steve", "Black", 1 , NULL);
-
-
-                    // const empVar = 'first_name, last_name, role_id, manager_id';
-
-                    // const employeePut = 'INSERT INTO employee ? VALUES ?';
-                    // empVar, empVal,
-                    // connection.query(employeePut, function (err, res) {
-                    //     if (err) throw err;
-                    //     console.table(res);
-                    //     init();
-                    // })
-                    //INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES ("Steve", "Black", 1 , NULL);
+                            if (err) throw err;
+                            init();
+                        })
                 })
         });
     });
 }
-//      function addEmployee() {
-//     inquirer
-//         .prompt(EmployeeQuestions)
-//         .then((data) => {
-//      parse out data appropriotly
-//      data.name == first_name
-//      const url = "INSERT INTO <table> (col1, col2, col3) VALUE (?, ?, ?)" 
-//      "UPDATE employee SET manager_id = ? WHERE id = ?;"   
-//      connection.query(departGet, [val1, val2, val3], function (err, res) {
-//     if (err) throw err;
-//     console.table(res);
-//     init();
-// })
-//         }
-// };
+
+// function FindId(arr, ){
+//     const
+// }
 
 const MenuQuestions = [
     {
@@ -198,6 +185,114 @@ const MenuQuestions = [
             'View All Employees', 'View All Departments', 'View All Roles', 'Exit']
     }
 ];
+
+function updateEmployeeRole() {
+    //Get all employee data from DB
+    const allEmployeeGet = 'SELECT employee.id, employee.first_name, employee.last_name, title, department_name AS Department, salary, CONCAT(e.first_name, " ", e.last_name) AS Manager FROM employee LEFT JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS e ON employee.manager_id = e.id';
+    connection.query(allEmployeeGet, function (err, res) {
+        if (err) throw err;
+        //Convert All employee data into an array of objects (to hold ID) and an array of just names To display in choices
+        const empArrArr = [];
+        const empArrList = [];
+        const responseLength = res.length;
+        for (i = 0; i < responseLength; i++) {
+            let empTempObj = '';
+            empTempObj += res[i].first_name;
+            empTempObj += ' ';
+            empTempObj += res[i].last_name;
+            // console.log(empTempObj);
+            empArrArr.push({ empID: res[i].id, empName: empTempObj });
+            empArrList.push(empTempObj);
+        }
+        //choose an employee to modify 
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'targetEmployeeUpdateRole',
+                    message: 'Select Employee to Update Role?',
+                    choices: empArrList
+                }
+            ])
+            .then((data) => {
+                // console.log(data);
+                //save response data into Target Employee variable for use later. NOTE data will get used again
+                const TargetEmployee = data;
+                // console.log(TargetEmployee);
+
+                //get all roles from DB
+                // const allRoles = 'SELECT * FROM role';
+                const allRoles = 'SELECT role.id, title, department_name FROM role JOIN department ON role.department_id = department.id';
+
+                connection.query(allRoles, function (err, res) {
+                    if (err) throw err;
+                    let allRolesLength = res.length;
+                    const allRoles = [];
+                    const allRolesList = [];
+                    for (i = 0; i < allRolesLength; i++) {
+                        let tempRoleDepart = '';
+                        tempRoleDepart += res[i].title;
+                        tempRoleDepart += ', ';
+                        tempRoleDepart += res[i].department_name;
+                        tempRoleDepart += ' Department';
+                        allRoles.push({ roleID: res[i].id, roleTitleDepart: tempRoleDepart });
+                        allRolesList.push(tempRoleDepart);
+                    }
+                    inquirer
+                        .prompt([
+                            {
+                                type: 'list',
+                                name: 'targetRole2Add2Employee',
+                                message: 'Select Role to add to Employee',
+                                choices: allRolesList
+                            }
+                        ])
+                        .then((data) => {
+                            const TargetRole = data;
+                            // console.log(TargetEmployee);
+                            // console.log(TargetRole);
+
+                            //Find Target Role ID
+                            allRolesLength = allRoles.length;
+                            let TargetRoleID = 0;
+                            for (i = 0; i < allRolesLength; i++) {
+                                if (allRoles[i].roleTitleDepart === TargetRole.targetRole2Add2Employee) {
+                                    TargetRoleID = allRoles[i].roleID;
+                                    break;
+                                }
+                            }
+                            //Find Target Employee ID
+                            const allEmployeeArrLength = empArrArr.length;
+                            let TargetEmployeeID = 0;
+                            for (i = 0; i < allEmployeeArrLength; i++) {
+                                if (empArrArr[i].empName === TargetEmployee.targetEmployeeUpdateRole) {
+                                    TargetEmployeeID = empArrArr[i].empID;
+                                    break;
+                                }
+                            }
+                            // console.log(TargetEmployee);
+                            // console.log(TargetEmployeeID);
+                            // console.log(TargetRole);
+                            // console.log(TargetRoleID);
+                            const UpdateRoleForEmployee = 'UPDATE employee SET role_id = ? WHERE id = ?';
+                            const TargetValues = [TargetRoleID, TargetEmployeeID];
+                            connection.query(UpdateRoleForEmployee, TargetValues, function (err, res) {
+                                if (err) throw err;
+                                console.clear();
+                                init();
+                            })
+
+                            // console.log(allRoles);
+                        })
+                });
+            });
+        // init();
+    })
+    // console.log(empArrList);
+    // console.table(res);
+
+}
+
 
 function veiwAllDepartments() {
     console.clear();
@@ -240,9 +335,12 @@ function viewAllRoles() {
 };
 
 function init() {
-    // console.clear();
+
     // console.log(teamMembers);
+
+
     inquirer
+
         .prompt(MenuQuestions)
 
         .then((data) => {
@@ -251,45 +349,67 @@ function init() {
 
             switch (data.choice) {
                 case 'Add Employee':
+                    console.clear();
                     // console.log("Yeah add a manager");
                     addEmployee();//(data.id)
                     break;
                 case 'Add Role':
+                    console.clear();
                     // console.log("Yeah add a engineer ");
                     addRole();//(data.id)
                     break;
                 case 'Add Department':
+                    console.clear();
                     // console.log("Yeah add a intern");
                     addDepartment();
                     break;
                 case 'View All Employees':
+                    console.clear();
                     // console.log("Yeah add a intern");
                     viewAllEmployees();
                     break;
                 case 'View All Departments':
+                    console.clear();
                     // console.log("Yeah add a intern");
                     veiwAllDepartments();
                     break;
                 case 'View All Roles':
+                    console.clear();
                     // console.log("Yeah add a intern");
                     viewAllRoles();
                     break;
+                case 'Update Employee Role'://---------------
+                    console.clear();
+                    // console.log("Yeah add a intern");
+                    updateEmployeeRole();
+                    break;
                 case 'Exit':
+                    console.clear();
                     connection.end();
                     // console.log("Yeah finish");
                     // fs.writeFile('./distributeRelease/index.html', generateHtmlContent(teamMembers), (err) =>
                     //     err ? console.error(err) : console.log('Team HTML File Generated!'));
                     break;
                 default:
+                    console.clear();
+                    console.log("");
                     console.log("Whoops! something went wrong, please try again");
+                    console.log("");
+                    init();
             }
 
         })
+
 }
 
 
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected to MySql");
-    init();
+    console.log(chalk.blue(chalkText));
+    setTimeout(() => {
+        console.clear();
+        init();
+    }, 1000);
+
 })

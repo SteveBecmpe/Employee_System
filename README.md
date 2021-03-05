@@ -13,7 +13,7 @@ See assets folder for screen shots and mysql work bench code.
 -[X] Build Query: add role    
 -[X] Build Query: add employee  
 
--[] Build Query: Update employee role
+-[X] Build Query: Update employee role, displays role and department, incase same role exists in multiple departments
 
 -[X] Build Query: view department    
 -[X] Build Query: view role    
