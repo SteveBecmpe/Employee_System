@@ -17,7 +17,7 @@ See assets folder for screen shots and mysql work bench code.
 
 -[X] Build Query: view department    
 -[X] Build Query: view role    
--[] Build Query: view employee    
+-[X] Build Query: view employee    
 -[X] Build Query: view all employees    
 
 # Bonus

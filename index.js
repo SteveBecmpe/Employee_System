@@ -180,12 +180,75 @@ const MenuQuestions = [
         type: 'list',
         message: 'CMS Employee Management System: What would you like to do next',
         name: 'choice',
-        choices: ['View All Employees', 'View All Employees By Department', 'View All Employees By Manager',
-            'Add Employee', 'Remove Employee', 'Update Employee Role', 'Update Employee Manager', 'Add Role', 'Add Department',
-            'View All Employees', 'View All Departments', 'View All Roles', 'Exit']
+        choices: [
+            'View All Employees',
+            'View Employee',
+            'View All Employees By Department',
+            'View All Employees By Manager',
+            'View All Departments',
+            'View All Roles',
+            'Add Employee',
+            'Remove Employee',
+            'Update Employee Role',
+            'Update Employee Manager',
+            'Add Role',
+            'Add Department',
+            'Exit']
     }
 ];
 
+
+function viewEmployee() {//redo this to find employee id and redo DB query then console.table(res)
+    //Get all employee data from DB
+    const allEmployeeGet = 'SELECT employee.id, employee.first_name, employee.last_name, title, department_name AS Department, salary, CONCAT(e.first_name, " ", e.last_name) AS Manager FROM employee LEFT JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS e ON employee.manager_id = e.id';
+    connection.query(allEmployeeGet, function (err, res) {
+        if (err) throw err;
+        //Convert All employee data into an array of objects (to hold ID) and an array of just names To display in choices
+        const empOrigResArr = res;
+        const empArrArr = [];
+        const empArrList = [];
+        const responseLength = res.length;
+        for (i = 0; i < responseLength; i++) {
+            let empTempObj = '';
+            empTempObj += res[i].first_name;
+            empTempObj += ' ';
+            empTempObj += res[i].last_name;
+            // console.log(empTempObj);
+            empArrArr.push({ empID: res[i].id, empName: empTempObj });
+            empArrList.push(empTempObj);
+        }
+        //choose an employee to modify 
+        inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'targetEmployeeUpdateRole',
+                    message: 'Select Employee to View.',
+                    choices: empArrList
+                }
+            ])
+            .then((data) => {
+                //save response data into Target Employee variable for use later. NOTE data will get used again
+                const TargetEmployee = data;
+
+                const allEmployeeArrLength = empArrArr.length;
+                let TargetEmployeeData;
+                for (i = 0; i < allEmployeeArrLength; i++) {
+                    if (empArrArr[i].empName === TargetEmployee.targetEmployeeUpdateRole) {
+                        TargetEmployeeData = empOrigResArr[i];
+                        break;
+                    }
+                }
+                console.log(TargetEmployeeData);
+                console.table(TargetEmployeeData);
+                init();
+            })
+
+    })
+};
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------
 function updateEmployeeRole() {
     //Get all employee data from DB
     const allEmployeeGet = 'SELECT employee.id, employee.first_name, employee.last_name, title, department_name AS Department, salary, CONCAT(e.first_name, " ", e.last_name) AS Manager FROM employee LEFT JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS e ON employee.manager_id = e.id';
@@ -367,6 +430,11 @@ function init() {
                     console.clear();
                     // console.log("Yeah add a intern");
                     viewAllEmployees();
+                    break;
+                case 'View Employee':
+                    console.clear();
+                    // console.log("Yeah add a intern");
+                    viewEmployee();
                     break;
                 case 'View All Departments':
                     console.clear();
