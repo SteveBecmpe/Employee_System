@@ -34,7 +34,10 @@ See assets folder for screen shots and mysql work bench code.
 - [X] View all roles
 - [X] View all employees
 - [X] Exit closes connection
-
+- [ ] Add Departments
+- [ ] Add roles
+- [X] Add employees
+- [X] update employee role
 
 
 
