@@ -35,7 +35,6 @@ const chalkText =
 function addEmployee() {
     console.clear();
     //Get all Roles
-    const roleArr = [];
     const roleList = [];
     const roleGet = 'SELECT * FROM role';
     connection.query(roleGet, function (err, res) {
@@ -44,62 +43,30 @@ function addEmployee() {
         } else {
             const roleLength = res.length;
             for (i = 0; i < roleLength; i++) {
-                roleArr.push({ roleID: res[i].id, roleName: res[i].title });
-                roleList.push(res[i].title);
-
+                roleList.push({ name: res[i].title, value: res[i].id });
             }
-            console.log(roleArr);
-            // console.log(roleList);
-            // console.table(res);
-            // init();
         }
-
         //Get All Departments
-        const managerArr = [];
         const managerList = [];
-        const managerGet = 'SELECT * FROM employee WHERE employee.manager_id is NULL';
+        // const managerGet = 'SELECT * FROM employee WHERE employee.manager_id is NULL ';
+        const managerGet ='SELECT employee.id, employee.first_name, employee.last_name, title, department_name FROM employee LEFT JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id Where manager_id is NULL AND title = "Manager"';
+
         connection.query(managerGet, function (err, res) {
             if (err) throw err;
             if (res.lenght === 0) {
-
             } else {
                 const manLength = res.length;
                 for (i = 0; i < manLength; i++) {
-                    managerArr.push({ manID: res[i].id, firstName: res[i].first_name, lastName: res[i].last_name });
-                    managerList.push(res[i].first_name + ' ' + res[i].last_name);
+                    let tempName = res[i].first_name;
+                    tempName += ' ';
+                    tempName += res[i].last_name;
+                    tempName += ' ';
+                    tempName += res[i].title;
+                    tempName += ' ';
+                    tempName += res[i].department_name;
+                    managerList.push({ name: tempName, value: res[i].id });
                 }
-                // console.log(managerArr);
-                // console.table(res);
-                // init();
             }
-
-            const EmployeeQuestions = [
-                {
-                    type: 'input',
-                    name: 'first_name',
-                    message: 'What is the employees first name?',
-                },
-                {
-                    type: 'input',
-                    name: 'last_name',
-                    message: 'What is the employees last name?',
-                },
-                {
-                    type: 'list',
-                    name: 'role',
-                    message: 'What is the employees role?',
-                    choices: roleArr
-                },
-                {
-                    type: 'list',
-                    name: 'manager',
-                    message: 'Who is the employees manager?',
-                    choices: managerArr
-                },
-
-
-            ];
-            // console.log(roleList);
             inquirer
                 .prompt([
                     {
@@ -124,42 +91,16 @@ function addEmployee() {
                         message: 'Who is the employees manager?',
                         choices: managerList
                     },
-
-
                 ])//EmployeeQuestions)
-
                 .then((data) => {
-                    // console.log("data");
-                    // console.log(data);
-                    let tempRoleId = 0;
-                    // console.log(roleArr.length);
-                    for (i = 0; i < roleArr.length; i++) {
-                        // console.log(roleArr[i].roleName);
-                        // console.log(data.role);
-                        if (roleArr[i].roleName === data.role) {
-                            tempRoleId = roleArr[i].roleID;
-                        }
-                    }
-                    let tempManId = 0;
-                    let tempName = '';
-                    // console.log(managerArr.length);
-                    for (i = 0; i < managerArr.length; i++) {
-                        tempName = managerArr[i].firstName;
-                        tempName += ' ';
-                        tempName += managerArr[i].lastName;
-                        // console.log(tempName);
-                        if (tempName === data.manager) {
-                            tempManId = managerArr[i].manID;
-                        }
-                    }
-
+                    let tempRoleId = data.role;
+                    let tempManId = data.manager;
                     const empVal = {
                         first_name: data.first_name,
                         last_name: data.last_name,
                         role_id: tempRoleId,
                         manager_id: tempManId
                     };
-
                     const employeePOST = 'INSERT INTO employee SET ?';
                     connection.query(employeePOST,
                         empVal, function (err, res) {
@@ -170,10 +111,6 @@ function addEmployee() {
         });
     });
 }
-
-// function FindId(arr, ){
-//     const
-// }
 
 const MenuQuestions = [
     {
@@ -197,7 +134,6 @@ const MenuQuestions = [
     }
 ];
 
-
 function viewEmployee() {//redo this to find employee id and redo DB query then console.table(res)
     //Get all employee data from DB
     const allEmployeeGet = 'SELECT employee.id, employee.first_name, employee.last_name, title, department_name AS Department, salary, CONCAT(e.first_name, " ", e.last_name) AS Manager FROM employee LEFT JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id LEFT JOIN employee AS e ON employee.manager_id = e.id';
@@ -205,7 +141,6 @@ function viewEmployee() {//redo this to find employee id and redo DB query then 
         if (err) throw err;
         //Convert All employee data into an array of objects (to hold ID) and an array of just names To display in choices
         const empOrigResArr = res;
-        const empArrArr = [];
         const empArrList = [];
         const responseLength = res.length;
         for (i = 0; i < responseLength; i++) {
@@ -214,33 +149,34 @@ function viewEmployee() {//redo this to find employee id and redo DB query then 
             empTempObj += ' ';
             empTempObj += res[i].last_name;
             // console.log(empTempObj);
-            empArrArr.push({ empID: res[i].id, empName: empTempObj });
-            empArrList.push(empTempObj);
+            empArrList.push({name: empTempObj, value: res[i].id});
         }
         //choose an employee to modify 
         inquirer
             .prompt([
                 {
                     type: 'list',
-                    name: 'targetEmployeeUpdateRole',
+                    name: 'id',
                     message: 'Select Employee to View.',
                     choices: empArrList
                 }
             ])
             .then((data) => {
+                // console.log("employee id chosen");
+                // console.log(data);
+                // console.log(data.id);
                 //save response data into Target Employee variable for use later. NOTE data will get used again
-                const TargetEmployee = data;
-
-                const allEmployeeArrLength = empArrArr.length;
+                const TargetEmployeeID = data;//id of employee choosen
+                const allEmployeeArrLength = empOrigResArr.length;
                 let TargetEmployeeData;
                 for (i = 0; i < allEmployeeArrLength; i++) {
-                    if (empArrArr[i].empName === TargetEmployee.targetEmployeeUpdateRole) {
+                    if (empOrigResArr[i].id === TargetEmployeeID.id) {
                         TargetEmployeeData = empOrigResArr[i];
                         break;
                     }
                 }
-                console.log(TargetEmployeeData);
-                console.table(TargetEmployeeData);
+                // console.log(TargetEmployeeData);
+                console.table('EMPLOYEE DETAILS', [TargetEmployeeData]);
                 init();
             })
 
